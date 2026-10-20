@@ -1,0 +1,164 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install All Dependencies",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "install:all"],
+      "problemMatcher": [],
+      "detail": "Install dependencies for backend, frontend, and playwright",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": [],
+      "detail": "Start the backend server on port 3001",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Backend (Dev Mode)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": [],
+      "detail": "Start backend with nodemon for auto-reload",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": [],
+      "detail": "Start the frontend dev server on port 5173",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Build Frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": [],
+      "detail": "Build frontend for production",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Start Full Stack (Backend + Frontend)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "problemMatcher": [],
+      "detail": "Start both backend and frontend concurrently",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Run Playwright Tests",
+      "type": "shell",
+      "command": "npx",
+      "args": ["playwright", "test"],
+      "options": {
+        "cwd": "${workspaceFolder}/playwright"
+      },
+      "problemMatcher": [],
+      "detail": "Run all Playwright tests",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Run Playwright Tests (UI Mode)",
+      "type": "shell",
+      "command": "npx",
+      "args": ["playwright", "test", "--ui"],
+      "options": {
+        "cwd": "${workspaceFolder}/playwright"
+      },
+      "problemMatcher": [],
+      "detail": "Run Playwright tests in interactive UI mode",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Run Playwright Tests (Headed)",
+      "type": "shell",
+      "command": "npx",
+      "args": ["playwright", "test", "--headed"],
+      "options": {
+        "cwd": "${workspaceFolder}/playwright"
+      },
+      "problemMatcher": [],
+      "detail": "Run Playwright tests with visible browser",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Show Playwright Report",
+      "type": "shell",
+      "command": "npx",
+      "args": ["playwright", "show-report"],
+      "options": {
+        "cwd": "${workspaceFolder}/playwright"
+      },
+      "problemMatcher": [],
+      "detail": "Open the HTML test report",
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Install Playwright Browsers",
+      "type": "shell",
+      "command": "npx",
+      "args": ["playwright", "install"],
+      "options": {
+        "cwd": "${workspaceFolder}/playwright"
+      },
+      "problemMatcher": [],
+      "detail": "Install Playwright browser binaries",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    }
+  ]
+}
