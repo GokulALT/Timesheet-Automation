@@ -43,19 +43,27 @@ ollama pull llama3        # fast local model (may need normalisation)
 ollama pull nemotron-3-ultra:cloud  # higher quality, slower (~2–3 min)
 ```
 
-### Environment files
+### Environment file — `backend/.env`
 
-**`backend/.env`**
+Copy `backend/.env.example` and fill in the required values:
+
 ```
-PORT=3001
-OLLAMA_MODEL=llama3
+# ── Server ──────────────────────────────
+PORT=3001                        # optional  (default: 3001)
+
+# ── AI schedule generation ──────────────
+NVIDIA_API_KEY=nvapi-...         # REQUIRED  — get from build.nvidia.com
+AI_MODEL=z-ai/glm-5.3-flash     # optional  (default: z-ai/glm-5.3-flash)
+
+# ── Kimai / myTime API ──────────────────
+# These are fallbacks only; credentials entered in the UI take precedence.
+# KIMAI_BASE_URL=https://timesheet.lntedutech.com/api   # optional
+# KIMAI_USER=you@lntedutech.com                         # optional
+# KIMAI_TOKEN=your-api-password                         # optional
+
+# ── Legacy Ollama (unused by default) ───
+# OLLAMA_MODEL=llama3
 # OLLAMA_HOST=http://127.0.0.1:11434
-```
-
-**`playwright/.env`**
-```
-TIMESHEET_USERNAME=you@lntedutech.com
-TIMESHEET_PASSWORD=your-portal-password
 ```
 
 ---
