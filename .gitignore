@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets (keep the .example templates)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+frontend/node_modules/.vite/
+
+# Playwright run artifacts
+playwright/schedule.json
+playwright/automation-status.json
+playwright/automation-status.json.tmp*
+playwright/test-results/
+playwright/playwright-report/
+playwright/blob-report/
+playwright/.cache/
+playwright/.auth/
+
+# Playwright MCP session logs
+.playwright-mcp/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
