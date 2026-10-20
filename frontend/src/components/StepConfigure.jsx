@@ -24,12 +24,12 @@ const PROVIDERS = [
   {
     id: 'lmstudio', label: 'LM Studio', icon: '🖥',
     description: 'Local model via LM Studio (localhost:1234)',
-    defaultModel: '', needsKey: false, baseUrlEditable: true,
+    defaultModel: '', needsKey: false, keyOptional: true, baseUrlEditable: true,
   },
   {
     id: 'ollama', label: 'Ollama', icon: '🦙',
     description: 'Local model via Ollama (localhost:11434)',
-    defaultModel: 'llama3', needsKey: false, baseUrlEditable: true,
+    defaultModel: 'llama3', needsKey: false, keyOptional: true, baseUrlEditable: true,
   },
 ]
 
@@ -46,7 +46,8 @@ export default function StepConfigure({ config, onSave }) {
     setProvider(id)
     setModel('')
     setBaseUrl('')
-    if (!next.needsKey) setApiKey('')
+    // A key belongs to one provider; never carry it over to another.
+    if (id !== provider) setApiKey('')
   }
 
   function handleSubmit(e) {
@@ -90,15 +91,20 @@ export default function StepConfigure({ config, onSave }) {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
           <h3 className="text-sm font-semibold text-slate-700">{meta.label} settings</h3>
 
-          {meta.needsKey && (
+          {(meta.needsKey || meta.keyOptional) && (
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1.5">API Key</label>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">
+                API Key
+                {meta.keyOptional && (
+                  <span className="ml-1 font-normal text-slate-400">(optional — only if authentication is enabled)</span>
+                )}
+              </label>
               <input
                 type="password"
                 value={apiKey}
                 onChange={e => setApiKey(e.target.value)}
-                required
-                placeholder={`Your ${meta.label} API key`}
+                required={meta.needsKey}
+                placeholder={meta.needsKey ? `Your ${meta.label} API key` : 'Leave blank if not required'}
                 className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 text-sm
                            placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               />

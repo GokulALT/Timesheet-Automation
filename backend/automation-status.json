@@ -1,0 +1,14 @@
+{
+  "state": "running",
+  "startedAt": "2026-10-20T07:29:54.219Z",
+  "finishedAt": null,
+  "total": 5,
+  "created": 0,
+  "failed": 0,
+  "current": {
+    "date": "2026-10-19",
+    "beginTime": "09:00",
+    "endTime": "12:00"
+  },
+  "failures": []
+}

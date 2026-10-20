@@ -1,8 +1,35 @@
+import { useState } from 'react'
+
 export default function LoginPage({ onLogin }) {
-  function handleSubmit(e) {
+  const [checking, setChecking] = useState(false)
+  const [error,    setError]    = useState('')
+
+  async function handleSubmit(e) {
     e.preventDefault()
     const f = e.currentTarget
-    onLogin({ kimaiUser: f.username.value.trim(), kimaiToken: f.token.value.trim() })
+    const creds = { kimaiUser: f.username.value.trim(), kimaiToken: f.token.value.trim() }
+
+    // Verify against the myTime API now, so a wrong password surfaces here
+    // instead of as every entry failing at the final step.
+    setChecking(true)
+    setError('')
+    try {
+      const r    = await fetch('/api/auth/verify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(creds),
+      })
+      const data = await r.json().catch(() => ({}))
+      if (!r.ok || !data.success) {
+        setError(data.error || `Verification failed (${r.status}).`)
+        return
+      }
+      onLogin(creds)
+    } catch {
+      setError('Could not reach the backend. Is it running on port 3001?')
+    } finally {
+      setChecking(false)
+    }
   }
 
   return (
@@ -59,12 +86,20 @@ export default function LoginPage({ onLogin }) {
               </div>
             </div>
 
+            {error && (
+              <div role="alert" className="rounded-lg bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
+              disabled={checking}
               className="w-full rounded-xl bg-indigo-600 px-6 py-3 text-white font-semibold text-sm shadow-sm
-                         hover:bg-indigo-700 active:bg-indigo-800 transition mt-2"
+                         hover:bg-indigo-700 active:bg-indigo-800 transition mt-2
+                         disabled:opacity-60 disabled:cursor-wait"
             >
-              Sign In
+              {checking ? 'Verifying with myTime…' : 'Sign In'}
             </button>
           </form>
         </div>

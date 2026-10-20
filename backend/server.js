@@ -7,7 +7,7 @@ const { scheduleWithAI }       = require('./aiService');
 const { normalizeSchedule }    = require('./normalizeSchedule');
 const { calculateTimeslots }   = require('./timeslotUtils');
 const { readStatus, clearStatus, createTracker } = require('./runStatus');
-const { createTimesheetEntry } = require('./kimaiService');
+const { createTimesheetEntry, verifyCredentials } = require('./kimaiService');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +25,14 @@ app.use(express.static(STATIC_DIR));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+app.post('/api/auth/verify', async (req, res) => {
+  const { kimaiUser, kimaiToken } = req.body || {};
+  const result = await verifyCredentials(kimaiUser, kimaiToken);
+  if (result.ok) return res.json({ success: true, user: result.user });
+  const status = result.reason === 'network' ? 502 : result.reason === 'access' ? 403 : 401;
+  return res.status(status).json({ success: false, reason: result.reason, error: result.message });
 });
 
 app.post('/api/schedule', async (req, res) => {

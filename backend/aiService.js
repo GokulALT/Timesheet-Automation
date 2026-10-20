@@ -69,7 +69,7 @@ async function callOpenAICompatible({ baseUrl, apiKey, model, prompt }) {
     method:     'POST',
     dispatcher: aiAgent,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {}),
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
@@ -147,11 +147,15 @@ async function scheduleWithAI(dates, taskSummary, providerConfig = {}) {
   const provider = providerConfig.provider || 'nvidia';
   const defaults = PROVIDER_DEFAULTS[provider] || PROVIDER_DEFAULTS.nvidia;
 
-  const apiKey  = providerConfig.apiKey  || process.env.NVIDIA_API_KEY;
-  const model   = providerConfig.model   || process.env.AI_MODEL || defaults.model;
+  // The env key and model are NVIDIA's; never send them to any other provider.
+  const isNvidia = provider === 'nvidia';
+  const apiKey  = providerConfig.apiKey  || (isNvidia ? process.env.NVIDIA_API_KEY : '');
+  const model   = providerConfig.model   || (isNvidia && process.env.AI_MODEL) || defaults.model;
   const baseUrl = providerConfig.baseUrl || defaults.baseUrl;
 
-  if (!apiKey && provider !== 'ollama') {
+  // Local servers accept a key only when authentication is turned on.
+  const keyOptional = provider === 'ollama' || provider === 'lmstudio';
+  if (!apiKey && !keyOptional) {
     throw new Error(`No API key provided for provider "${provider}".`);
   }
 
@@ -161,7 +165,7 @@ async function scheduleWithAI(dates, taskSummary, providerConfig = {}) {
   if (provider === 'anthropic') {
     rawContent = await callAnthropic({ apiKey, model, prompt });
   } else {
-    rawContent = await callOpenAICompatible({ baseUrl, apiKey: apiKey || 'ollama', model, prompt });
+    rawContent = await callOpenAICompatible({ baseUrl, apiKey, model, prompt });
   }
 
   return parseAIResponse(rawContent, model);

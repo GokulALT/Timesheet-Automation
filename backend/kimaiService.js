@@ -70,4 +70,65 @@ async function createTimesheetEntry({ date, beginTime, endTime, type, workActivi
   return json;
 }
 
-module.exports = { createTimesheetEntry };
+async function kimaiGet(path, user, token) {
+  const res = await undiciFetch(`${BASE_URL}${path}`, {
+    method:     'GET',
+    headers:    authHeaders(user, token),
+    dispatcher: kimaiAgent,
+  });
+  const json = await res.json().catch(() => ({}));
+  return { status: res.status, ok: res.ok, json };
+}
+
+/**
+ * Check, before any schedule work, that these credentials can do what the
+ * final step does: authenticate and post to the fixed project/activity IDs.
+ * A valid login that cannot see one of those IDs would still fail every insert.
+ *
+ * @returns {Promise<{ ok: true, user: object } | { ok: false, reason: 'auth'|'access'|'network', message: string }>}
+ */
+async function verifyCredentials(user, token) {
+  if (!user || !token) {
+    return { ok: false, reason: 'auth', message: 'Username and API password are both required.' };
+  }
+
+  let me;
+  try {
+    me = await kimaiGet('/users/me', user, token);
+  } catch (err) {
+    return {
+      ok: false, reason: 'network',
+      message: `Could not reach myTime at ${BASE_URL} (${err.cause?.code || err.message}). Check your network or VPN.`,
+    };
+  }
+
+  if (me.status === 401 || me.status === 403) {
+    return { ok: false, reason: 'auth', message: 'Invalid username or API password.' };
+  }
+  if (!me.ok) {
+    return { ok: false, reason: 'network', message: `myTime returned ${me.status}: ${me.json.message || 'unexpected response'}` };
+  }
+
+  const required = [
+    ['project',  PROJECT_WORK,              'work project'],
+    ['project',  PROJECT_LEAVE,             'leave project'],
+    ['activity', WORK_ACTIVITIES.product,   'PE - Product activity'],
+    ['activity', WORK_ACTIVITIES.delivery,  'PE - Delivery activity'],
+    ['activity', ACTIVITY_LEAVE,            'PE - Leave activity'],
+  ];
+  const checks = await Promise.all(required.map(([kind, id]) =>
+    kimaiGet(`/${kind === 'project' ? 'projects' : 'activities'}/${id}`, user, token).catch(() => ({ ok: false }))
+  ));
+  const missing = required.filter((_, i) => !checks[i].ok).map(([, id, label]) => `${label} (#${id})`);
+
+  if (missing.length) {
+    return {
+      ok: false, reason: 'access',
+      message: `Signed in, but this account cannot access: ${missing.join(', ')}. Entries for these would be rejected.`,
+    };
+  }
+
+  return { ok: true, user: { username: me.json.username, alias: me.json.alias || null } };
+}
+
+module.exports = { createTimesheetEntry, verifyCredentials };
