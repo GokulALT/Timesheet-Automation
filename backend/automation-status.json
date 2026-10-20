@@ -1,14 +1,29 @@
 {
-  "state": "running",
-  "startedAt": "2026-10-20T07:29:54.219Z",
-  "finishedAt": null,
+  "state": "completed",
+  "startedAt": "2026-10-20T08:25:40.265Z",
+  "finishedAt": "2026-10-20T08:25:43.756Z",
   "total": 5,
-  "created": 0,
-  "failed": 0,
-  "current": {
-    "date": "2026-10-19",
-    "beginTime": "09:00",
-    "endTime": "12:00"
-  },
-  "failures": []
+  "created": 2,
+  "failed": 3,
+  "current": null,
+  "failures": [
+    {
+      "date": "2026-10-20",
+      "beginTime": "14:00",
+      "endTime": "15:00",
+      "error": "Kimai 400: Validation Failed"
+    },
+    {
+      "date": "2026-10-20",
+      "beginTime": "15:00",
+      "endTime": "17:00",
+      "error": "Kimai 400: Validation Failed"
+    },
+    {
+      "date": "2026-10-20",
+      "beginTime": "17:00",
+      "endTime": "18:00",
+      "error": "Kimai 400: Validation Failed"
+    }
+  ]
 }

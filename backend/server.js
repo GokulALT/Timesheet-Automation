@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path    = require('path');
+const fs      = require('fs');
 const { getWorkingDates }      = require('./schedulerLogic');
 const { scheduleWithAI }       = require('./aiService');
 const { normalizeSchedule }    = require('./normalizeSchedule');
@@ -72,6 +73,22 @@ app.post('/api/schedule', async (req, res) => {
     console.error('Error generating schedule:', err);
     return res.status(500).json({ success: false, error: err.message || 'An unexpected error occurred.' });
   }
+});
+
+app.post('/api/schedule/save', (req, res) => {
+  const { schedule } = req.body || {};
+  if (!Array.isArray(schedule) || schedule.length === 0)
+    return res.status(400).json({ success: false, error: 'schedule array is required.' });
+
+  const outPath = path.join(__dirname, 'schedule.json');
+  try {
+    fs.writeFileSync(outPath, JSON.stringify(schedule, null, 2));
+  } catch (err) {
+    return res.status(500).json({ success: false, error: `Could not write file: ${err.message}` });
+  }
+
+  const totalEntries = schedule.reduce((n, d) => n + (d.entries?.length ?? 0), 0);
+  return res.json({ success: true, days: schedule.length, entries: totalEntries, path: outPath });
 });
 
 function countEntries(schedule) {
@@ -154,7 +171,10 @@ app.get('/api/automation/status', (req, res) => {
     return res.json({ state: 'idle' });
   }
 
-  if (status.state === 'running' && currentRun) {
+  if (status.state === 'running') {
+    if (!currentRun)
+      return res.json({ ...status, state: 'crashed',
+        error: 'The backend restarted while a run was in progress.' });
     if (currentRun.stopped)
       return res.json({ ...status, state: 'stopped' });
     if (currentRun.exitCode !== null)

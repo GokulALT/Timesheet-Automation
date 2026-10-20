@@ -1,0 +1,33 @@
+[
+  {
+    "date": "2026-10-19",
+    "entries": [
+      {
+        "task": "Test environment setup and test data preparation",
+        "duration": 1.5,
+        "activity": "product"
+      },
+      {
+        "task": "Functional testing of registration flow (happy path)",
+        "duration": 2,
+        "activity": "product"
+      },
+      {
+        "task": "Negative and boundary testing (invalid inputs, duplicate emails, etc.)",
+        "duration": 2,
+        "activity": "product"
+      },
+      {
+        "task": "Integration testing with user service and email service",
+        "duration": 1.5,
+        "activity": "product"
+      },
+      {
+        "task": "Bug reporting and retesting fixes",
+        "duration": 1,
+        "activity": "product"
+      }
+    ],
+    "type": "work"
+  }
+]

@@ -109,25 +109,6 @@ async function verifyCredentials(user, token) {
     return { ok: false, reason: 'network', message: `myTime returned ${me.status}: ${me.json.message || 'unexpected response'}` };
   }
 
-  const required = [
-    ['project',  PROJECT_WORK,              'work project'],
-    ['project',  PROJECT_LEAVE,             'leave project'],
-    ['activity', WORK_ACTIVITIES.product,   'PE - Product activity'],
-    ['activity', WORK_ACTIVITIES.delivery,  'PE - Delivery activity'],
-    ['activity', ACTIVITY_LEAVE,            'PE - Leave activity'],
-  ];
-  const checks = await Promise.all(required.map(([kind, id]) =>
-    kimaiGet(`/${kind === 'project' ? 'projects' : 'activities'}/${id}`, user, token).catch(() => ({ ok: false }))
-  ));
-  const missing = required.filter((_, i) => !checks[i].ok).map(([, id, label]) => `${label} (#${id})`);
-
-  if (missing.length) {
-    return {
-      ok: false, reason: 'access',
-      message: `Signed in, but this account cannot access: ${missing.join(', ')}. Entries for these would be rejected.`,
-    };
-  }
-
   return { ok: true, user: { username: me.json.username, alias: me.json.alias || null } };
 }
 

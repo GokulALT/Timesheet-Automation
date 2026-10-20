@@ -57,10 +57,11 @@ export default function App() {
   const fetchStatus = useCallback(async () => {
     try {
       const r = await fetch('/api/automation/status')
+      if (!r.ok) return null
       const d = await r.json()
       setStatus(d)
       return d
-    } catch { return null }
+    } catch { /* backend not up yet */ return null }
   }, [])
 
   useEffect(() => { fetchStatus() }, [fetchStatus])
@@ -107,6 +108,7 @@ export default function App() {
       const d = await r.json()
       if (!r.ok) throw new Error(d.error || d.message || `Server error: ${r.status}`)
       setSchedule(d.schedule ?? d)
+      setStatus(null)
       setStep('review')
     } catch (err) {
       setGenError(err.message || 'Something went wrong. Please try again.')
@@ -140,6 +142,7 @@ export default function App() {
     setStartingMode('api')
     setFillError(null)
     setSavedInfo(null)
+    setStatus(null)   // clear any crashed/stopped banner immediately
     try {
       const r = await fetch('/api/automate-kimai', {
         method:  'POST',
@@ -197,7 +200,7 @@ export default function App() {
               return (
                 <button
                   key={s.id}
-                  onClick={() => isReachable && setStep(s.id)}
+                  onClick={() => { if (!isReachable) return; if (s.id === 'review') setStatus(null); setStep(s.id) }}
                   disabled={!isReachable}
                   className={`relative flex items-center gap-2 px-5 py-4 text-sm font-medium transition
                     ${isActive

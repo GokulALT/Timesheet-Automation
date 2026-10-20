@@ -62,7 +62,7 @@ function FailureList({ failures }) {
   )
 }
 
-export default function AutomationStatus({ status, onStop, stopping }) {
+export default function AutomationStatus({ status, onStop, onRetry, stopping }) {
   if (!status || status.state === 'idle') return null
 
   const { state, created = 0, failed = 0, total = 0, current, failures, startedAt, finishedAt, error } = status
@@ -103,6 +103,15 @@ export default function AutomationStatus({ status, onStop, stopping }) {
                          hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {stopping ? 'Stopping\u2026' : 'Stop'}
+            </button>
+          )}
+          {(state === 'crashed' || state === 'stopped') && onRetry && (
+            <button
+              onClick={onRetry}
+              className="rounded-md bg-white/15 px-2.5 py-1 text-xs font-semibold text-white
+                         hover:bg-white/25"
+            >
+              Try Again
             </button>
           )}
         </div>

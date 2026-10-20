@@ -166,7 +166,7 @@ export default function StepReview({
         </div>
       )}
 
-      <AutomationStatus status={status} onStop={onStop} stopping={stopping} />
+      <AutomationStatus status={status} onStop={onStop} onRetry={onFill} stopping={stopping} />
 
       {/* Day cards grid */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
